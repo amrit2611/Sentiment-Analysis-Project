@@ -2,11 +2,12 @@ import random
 import codecs
 import io
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
-CHANNEL_ID = "UCucot-Zp428OwkyRm2I7v2Q"
+CHANNEL_IDS = ["UCucot-Zp428OwkyRm2I7v2Q", "UCkvK_5omS-42Ovgah8KRKtg", "UC4qk9TtGhBKCkoWz5qGJcGg", "UCNGkAYEhcVdlwJITJSnB73A", "UCnQC_G5Xsjhp9fEJKuIcrSw", "UCGp6FxRC5mcRvoPz71NMpHg", "UC7bYyWCCCLHDU0ZuNzGNTtg"]
 
 def get_youtube():
-    DEVELOPER_KEY = 'AIzaSyBDMskOiFNVdaJsddWV4tKiNtVxn5tTjhg'
+    DEVELOPER_KEY = 'AIzaSyDzQgQj_-uLtzIohQ1DcdjLozgkqGre7FA'
     YOUTUBE_API_SERVICE_NAME = 'youtube'
     YOUTUBE_API_VERSION = 'v3'
     youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=DEVELOPER_KEY)
@@ -21,39 +22,49 @@ def extract_comments(comment_threads, keywords):
         if any(keyword in comment_text.lower() for keyword in keywords):
             comments.append(comment_text)
     return comments
-
 def main():
     youtube = get_youtube()
-
-    request = youtube.search().list(
-        part="snippet",
-        type="video",
-        channelId=CHANNEL_ID,
-        maxResults=50  # Fetch more comments
-    )
-    response = request.execute()
-
+    
     all_comments = []
-    for item in response.get("items", []):
-        videoId = item['id']['videoId']
-
-        request_comments = youtube.commentThreads().list(
+    for channel_id in CHANNEL_IDS:
+        request = youtube.search().list(
             part="snippet",
-            videoId=videoId,
+            type="video",
+            channelId=channel_id,
+            maxResults=50  # Fetch more comments
         )
-        response_comments = request_comments.execute()
+        response = request.execute()
 
-        keywords = ["fat", "ugly", "skinny", "obese", "lumpy", "disgusting", "chubby", "gross"]
-        comments = extract_comments(response_comments.get("items", []), keywords)
+        for item in response.get("items", []):
+            videoId = item['id']['videoId']
 
-        all_comments.extend(comments)
+            try:
+                request_comments = youtube.commentThreads().list(
+                    part="snippet",
+                    videoId=videoId,
+                    maxResults=100
+                )
+                response_comments = request_comments.execute()
+
+                keywords = ["fat", "ugly", "skinny", "obese", "lumpy", "disgusting", "chubby", "gross", "plus", "size", "sized", "overeat", "lose weight", "weight", "bony", "skeletal", "scrawny", "bulky", "thick", "toothpick", "too thin", "underweight", "overweight", "anorexic", "bullmic", "twig", "reed", "stick figure", "morbid", "morbidly obese", "fatso", "chunky", "plump", "lard", "butterball", "blob", "hideous", "baggy", "revealing", "waddling", "slumping", "jiggling"]
+                comments = extract_comments(response_comments.get("items", []), keywords)
+
+                all_comments.extend(comments)
+
+            except HttpError as e:
+                # Check if the error is due to comments being disabled
+                if "commentsDisabled" in str(e):
+                    print(f"Comments disabled for video: {videoId}")
+                else:
+                    print(f"Error processing video {videoId}: {e}")
+
 
     # Remove duplicates and shuffle
     unique_comments = list(set(all_comments))
     random.shuffle(unique_comments)
 
     # Limit to a specific number of comments you want to write to the file
-    comments_to_write = unique_comments[:20]  # Adjust the number as needed
+    comments_to_write = unique_comments[:50]  # Adjust the number as needed
 
     with io.open("comments.txt", "a", encoding="utf-8") as f:
         for comment in comments_to_write:
