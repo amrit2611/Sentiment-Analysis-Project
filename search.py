@@ -4,10 +4,10 @@ import io
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-CHANNEL_IDS = ["UCucot-Zp428OwkyRm2I7v2Q", "UCkvK_5omS-42Ovgah8KRKtg", "UC4qk9TtGhBKCkoWz5qGJcGg", "UCNGkAYEhcVdlwJITJSnB73A", "UCnQC_G5Xsjhp9fEJKuIcrSw", "UCGp6FxRC5mcRvoPz71NMpHg", "UC7bYyWCCCLHDU0ZuNzGNTtg"]
+CHANNEL_IDS = ["UCucot-Zp428OwkyRm2I7v2Q", "UCkvK_5omS-42Ovgah8KRKtg", "UC4qk9TtGhBKCkoWz5qGJcGg", "UCNGkAYEhcVdlwJITJSnB73A", "UCnQC_G5Xsjhp9fEJKuIcrSw", "UCGp6FxRC5mcRvoPz71NMpHg", "UC7bYyWCCCLHDU0ZuNzGNTtg", "UCEy0HWmgp2PUTBICGqKfB_A", "UCVWTuLqDlnJZYeIt-tUBdvw"]
 
 def get_youtube():
-    DEVELOPER_KEY = 'AIzaSyDzQgQj_-uLtzIohQ1DcdjLozgkqGre7FA'
+    DEVELOPER_KEY = 'AIzaSyBag1Gj-Dsvw47-PvRNtjefVRgFIMxgC3A'
     YOUTUBE_API_SERVICE_NAME = 'youtube'
     YOUTUBE_API_VERSION = 'v3'
     youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=DEVELOPER_KEY)
@@ -47,6 +47,7 @@ def main():
                 response_comments = request_comments.execute()
 
                 keywords = ["fat", "ugly", "skinny", "obese", "lumpy", "disgusting", "chubby", "gross", "plus", "size", "sized", "overeat", "lose weight", "weight", "bony", "skeletal", "scrawny", "bulky", "thick", "toothpick", "too thin", "underweight", "overweight", "anorexic", "bullmic", "twig", "reed", "stick figure", "morbid", "morbidly obese", "fatso", "chunky", "plump", "lard", "butterball", "blob", "hideous", "baggy", "revealing", "waddling", "slumping", "jiggling"]
+                # ["fat", "ugly", "skinny", "obese"]
                 comments = extract_comments(response_comments.get("items", []), keywords)
 
                 all_comments.extend(comments)
@@ -63,8 +64,8 @@ def main():
     unique_comments = list(set(all_comments))
     random.shuffle(unique_comments)
 
-    # Limit to a specific number of comments you want to write to the file
-    comments_to_write = unique_comments[:50]  # Adjust the number as needed
+    # Limit to a specific number of comments we want to write to the file in one go
+    comments_to_write = unique_comments[:50]  
 
     with io.open("comments.txt", "a", encoding="utf-8") as f:
         for comment in comments_to_write:
