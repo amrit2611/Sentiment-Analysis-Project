@@ -13,7 +13,8 @@ def remove_html_tags_and_urls(text):
     return clean_text
 
 def replace_emojis(comment):
-    return ''.join(c if c not in emoji.UNICODE_EMOJI else ' ' for c in comment)
+    # Remove 'b' prefix if present and then apply demojize
+    return emoji.demojize(comment[2:]) if comment.startswith("b'") else comment
 
 def convert_to_lowercase(input_file, output_file):
     with open(input_file, "rb") as f:
