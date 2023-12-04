@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from html import unescape, escape  # Import escape function
 
 CUSTOM_STOP_WORDS = ["may", "might", "shall", "would", "could", "a", "an", "the"]
-CUSTOM_SPECIAL_CHARACTERS = ["*", "&", ",", ".", "<", ">", "+", "/", ":", ";", "«", "»"]
+CUSTOM_SPECIAL_CHARACTERS = ["*", "&", ",", ".", "<", ">", "+", "/", ":", ";", "«", "»", "=", "(", ")", "[", "]", "{", "}", "\""]
 
 def remove_html_tags_and_urls(text):
     # Use BeautifulSoup to handle HTML entities
