@@ -3,6 +3,8 @@ import re
 from bs4 import BeautifulSoup
 from html import unescape, escape  # Import escape function
 
+CUSTOM_STOP_WORDS = ["may", "might", "shall", "would", "could", "a", "an", "the"]
+
 def remove_html_tags_and_urls(text):
     # Use BeautifulSoup to handle HTML entities
     soup = BeautifulSoup(unescape(text), 'html.parser')
@@ -34,18 +36,25 @@ def clean_special_characters(comment):
     
     return cleaned_comment
 
+def remove_stopwords(comment):
+    tokens = comment.split()
+    filtered_tokens = [word for word in tokens if word.lower() not in CUSTOM_STOP_WORDS]
+    return ' '.join(filtered_tokens)
+
 def convert_to_lowercase(input_file, output_file):
     with open(input_file, "rb") as f:
         # Read bytes, decode to string, and remove leading/trailing whitespaces
         unique_comments = [line.strip() for line in f.readlines()]
 
-    # Remove HTML tags, URLs, replace emojis, and clean special characters
+    # Remove HTML tags, URLs, replace emojis, clean special characters, and remove custom stop words
     processed_comments = [
-        clean_special_characters(
-            replace_emojis(
-                remove_html_tags_and_urls(
-                    comment.decode("utf-8") if isinstance(comment, bytes) else comment
-                ).lower()
+        remove_stopwords(
+            clean_special_characters(
+                replace_emojis(
+                    remove_html_tags_and_urls(
+                        comment.decode("utf-8") if isinstance(comment, bytes) else comment
+                    ).lower()
+                )
             )
         )
         for comment in unique_comments
