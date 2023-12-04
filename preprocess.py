@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from html import unescape, escape  # Import escape function
 
 CUSTOM_STOP_WORDS = ["may", "might", "shall", "would", "could", "a", "an", "the"]
+CUSTOM_SPECIAL_CHARACTERS = ["*", "&", ",", ".", "<", ">", "+", "/", ":", ";", "«", "»"]
 
 def remove_html_tags_and_urls(text):
     # Use BeautifulSoup to handle HTML entities
@@ -33,6 +34,10 @@ def clean_special_characters(comment):
     
     # Replace ! and ? symbols with 'exclamation_symbol' and 'question_symbol' respectively
     cleaned_comment = cleaned_comment.replace('!', 'exclamation_symbol').replace('?', 'question_symbol')
+
+    # Remove specified special characters
+    for char in CUSTOM_SPECIAL_CHARACTERS:
+        cleaned_comment = cleaned_comment.replace(char, '')
     
     return cleaned_comment
 
@@ -46,7 +51,7 @@ def convert_to_lowercase(input_file, output_file):
         # Read bytes, decode to string, and remove leading/trailing whitespaces
         unique_comments = [line.strip() for line in f.readlines()]
 
-    # Remove HTML tags, URLs, replace emojis, clean special characters, and remove custom stop words
+    # Remove HTML tags, URLs, replace emojis, clean special characters, remove custom stop words
     processed_comments = [
         remove_stopwords(
             clean_special_characters(
