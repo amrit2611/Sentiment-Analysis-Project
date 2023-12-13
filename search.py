@@ -45,7 +45,7 @@ def main():
                     maxResults=100
                 )
                 response_comments = request_comments.execute()
-
+                
                 keywords = ["fat", "ugly", "skinny", "obese", "lumpy", "disgusting", "chubby", "gross", "plus", "size", "sized", "overeat", "lose weight", "weight", "bony", "skeletal", "scrawny", "bulky", "thick", "toothpick", "too thin", "underweight", "overweight", "anorexic", "bullmic", "twig", "reed", "stick figure", "morbid", "morbidly obese", "fatso", "chunky", "plump", "lard", "butterball", "blob", "hideous", "baggy", "revealing", "waddling", "slumping", "jiggling"]
                 # ["fat", "ugly", "skinny", "obese"]
                 comments = extract_comments(response_comments.get("items", []), keywords)
